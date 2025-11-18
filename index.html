@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>RiskXLabs Ticker Test</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <style>
+    /* === Base page styling (demo only) =============================== */
+    :root {
+      --rxl-bg: #020617;
+      --rxl-card: #020617;
+      --rxl-text: #e5e7eb;
+      --rxl-muted: #9ca3af;
+      --rxl-border: #1f2937;
+      --rxl-accent: #22d3ee;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: radial-gradient(circle at top, #0b1120 0, #020617 45%, #000 100%);
+      color: var(--rxl-text);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      /* Leave space so bottom ticker doesn't overlap main content */
+      padding-bottom: 40px;
+    }
+
+    .rxl-main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .rxl-main-inner {
+      max-width: 640px;
+    }
+
+    .rxl-title {
+      font-size: 1.8rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--rxl-accent);
+      margin-bottom: 0.5rem;
+    }
+
+    .rxl-subtitle {
+      font-size: 0.95rem;
+      color: var(--rxl-muted);
+    }
+
+    /* === Bottom Ticker ================================================= */
+
+    .rxl-ticker-shell {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 36px;
+      background: rgba(2, 6, 23, 0.96);
+      border-top: 1px solid var(--rxl-border);
+      box-shadow: 0 -6px 14px rgba(0, 0, 0, 0.65);
+      overflow: hidden;
+      z-index: 9999;
+      display: flex;
+      align-items: stretch;
+    }
+
+    /* Optional left label "LIVE MARKETS" */
+    .rxl-ticker-label {
+      display: flex;
+      align-items: center;
+      padding: 0 0.75rem;
+      border-right: 1px solid #111827;
+      font-size: 0.75rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--rxl-muted);
+      white-space: nowrap;
+      gap: 0.35rem;
+    }
+
+    .rxl-ticker-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: #22c55e;
+      box-shadow: 0 0 8px #22c55e;
+      animation: rxl-pulse 1.8s ease-in-out infinite;
+    }
+
+    @keyframes rxl-pulse {
+      0%, 100% { opacity: 0.4; transform: scale(0.9); }
+      50% { opacity: 1; transform: scale(1.1); }
+    }
+
+    .rxl-ticker-viewport {
+      position: relative;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .rxl-ticker-track {
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      white-space: nowrap;
+      display: inline-block;
+      padding-right: 100%;
+      animation: rxl-ticker-scroll 25s linear infinite;
+    }
+
+    @keyframes rxl-ticker-scroll {
+      0% {
+        transform: translate3d(0, -50%, 0);
+      }
+      100% {
+        transform: translate3d(-50%, -50%, 0);
+      }
+    }
+
+    .rxl-ticker-item {
+      display: inline-flex;
+      align-items: baseline;
+      margin: 0 1.25rem;
+      gap: 0.35rem;
+      font-size: 0.8rem;
+      color: var(--rxl-text);
+    }
+
+    .rxl-ticker-symbol {
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .rxl-ticker-price {
+      opacity: 0.9;
+    }
+
+    .rxl-ticker-change {
+      font-size: 0.75rem;
+    }
+
+    .rxl-up .rxl-ticker-change {
+      color: #22c55e;
+    }
+
+    .rxl-down .rxl-ticker-change {
+      color: #ef4444;
+    }
+
+    .rxl-ticker-sep {
+      opacity: 0.35;
+      margin: 0 0.5rem;
+    }
+
+    .rxl-ticker-empty {
+      font-size: 0.8rem;
+      color: var(--rxl-muted);
+      padding-left: 1rem;
+      white-space: nowrap;
+    }
+
+    @media (max-width: 600px) {
+      .rxl-ticker-label {
+        display: none; /* give max width to the actual ticker on small screens */
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="rxl-main">
+    <div class="rxl-main-inner">
+      <div class="rxl-title">RiskXLabs Ticker Test</div>
+      <div class="rxl-subtitle">
+        This page is just a sandbox to test the Cloudflare Worker streaming prices
+        for ETH, IOTX, SOL, and XRP. The ticker along the bottom hits your
+        <code>/api/ticker</code> endpoint every 12 seconds.
+      </div>
+    </div>
+  </div>
+
+  <!-- === Bottom Ticker ====================================================== -->
+  <div class="rxl-ticker-shell">
+    <div class="rxl-ticker-label">
+      <span class="rxl-ticker-dot"></span>
+      <span>LIVE MARKETS</span>
+    </div>
+    <div class="rxl-ticker-viewport">
+      <div id="rxl-ticker-track" class="rxl-ticker-track">
+        <!-- populated by JS -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // === CONFIG ============================================================
+    // Replace this with your actual Worker URL
+    const RXL_TICKER_API = "https://ticker-test.YOUR-SUBDOMAIN.workers.dev/api/ticker";
+
+    const REFRESH_MS = 12000; // 12 seconds
+
+    async function fetchTickerData() {
+      try {
+        const res = await fetch(RXL_TICKER_API, { cache: "no-store" });
+        if (!res.ok) {
+          console.error("Ticker API error", res.status);
+          return null;
+        }
+        const data = await res.json();
+        return data.assets || [];
+      } catch (err) {
+        console.error("Ticker fetch failed", err);
+        return null;
+      }
+    }
+
+    function formatPrice(num) {
+      if (num == null || isNaN(num)) return "-";
+      const abs = Math.abs(num);
+      if (abs >= 100) return num.toFixed(2);
+      if (abs >= 1) return num.toFixed(3);
+      return num.toFixed(4);
+    }
+
+    function formatChangePct(num) {
+      if (num == null || isNaN(num)) return "-";
+      const sign = num > 0 ? "+" : "";
+      return sign + num.toFixed(2) + "%";
+    }
+
+    function buildTickerRowHtml(assets) {
+      if (!assets || !assets.length) {
+        return `<span class="rxl-ticker-empty">Waiting for market data…</span>`;
+      }
+
+      const segments = [];
+
+      assets.forEach((a, idx) => {
+        const price = formatPrice(a.priceUsd);
+        const change = Number(a.change24hPct || 0);
+        const cls = change >= 0 ? "rxl-up" : "rxl-down";
+
+        segments.push(`
+          <span class="rxl-ticker-item ${cls}">
+            <span class="rxl-ticker-symbol">${a.symbol}</span>
+            <span class="rxl-ticker-price">$${price}</span>
+            <span class="rxl-ticker-change">(${formatChangePct(change)})</span>
+          </span>
+        `);
+
+        if (idx < assets.length - 1) {
+          segments.push(`<span class="rxl-ticker-sep">|</span>`);
+        }
+      });
+
+      return segments.join("");
+    }
+
+    async function refreshTicker() {
+      const track = document.getElementById("rxl-ticker-track");
+      if (!track) return;
+
+      const assets = await fetchTickerData();
+      const rowHtml = buildTickerRowHtml(assets);
+
+      // Duplicate once so the marquee has something to scroll into
+      track.innerHTML = rowHtml + rowHtml;
+
+      // Restart animation so it feels continuous on each refresh
+      track.style.animation = "none";
+      // Trigger reflow
+      void track.offsetHeight;
+      track.style.animation = "";
+      track.style.animation = "rxl-ticker-scroll 25s linear infinite";
+    }
+
+    // Initial load
+    refreshTicker();
+
+    // Poll every 12 seconds
+    setInterval(refreshTicker, REFRESH_MS);
+  </script>
+</body>
+</html>
