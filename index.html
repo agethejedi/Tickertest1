@@ -2,10 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>RiskXLabs Ticker + Watchlists</title>
+  <title>RiskXLabs Ticker Test</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <style>
+    /* === Base page styling (demo only) =============================== */
     :root {
       --rxl-bg: #020617;
       --rxl-card: #020617;
@@ -13,10 +14,11 @@
       --rxl-muted: #9ca3af;
       --rxl-border: #1f2937;
       --rxl-accent: #22d3ee;
-      --rxl-accent-soft: rgba(34, 211, 238, 0.12);
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     html, body {
       margin: 0;
@@ -30,20 +32,21 @@
     body {
       display: flex;
       flex-direction: column;
-      padding-bottom: 40px; /* space for bottom ticker */
+      /* Leave space so bottom ticker doesn't overlap main content */
+      padding-bottom: 40px;
     }
 
     .rxl-main {
       flex: 1;
       display: flex;
-      align-items: flex-start;
+      align-items: center;
       justify-content: center;
-      padding: 2rem 1rem 1rem;
+      text-align: center;
+      padding: 2rem;
     }
 
     .rxl-main-inner {
-      width: 100%;
-      max-width: 800px;
+      max-width: 640px;
     }
 
     .rxl-title {
@@ -57,124 +60,9 @@
     .rxl-subtitle {
       font-size: 0.95rem;
       color: var(--rxl-muted);
-      margin-bottom: 1.5rem;
     }
 
-    /* === Watchlist controls ======================================= */
-
-    .rxl-watchlists {
-      background: rgba(15, 23, 42, 0.85);
-      border-radius: 0.75rem;
-      padding: 1rem 1.25rem;
-      border: 1px solid #1f2937;
-      box-shadow: 0 18px 45px rgba(0,0,0,0.6);
-    }
-
-    .rxl-watchlist-tabs {
-      display: flex;
-      gap: 0.5rem;
-      margin-bottom: 0.75rem;
-      flex-wrap: wrap;
-    }
-
-    .rxl-watchlist-tab {
-      border-radius: 999px;
-      border: 1px solid #1f2937;
-      background: #020617;
-      color: var(--rxl-muted);
-      font-size: 0.8rem;
-      padding: 0.35rem 0.85rem;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-    }
-
-    .rxl-watchlist-tab-active {
-      border-color: var(--rxl-accent);
-      background: var(--rxl-accent-soft);
-      color: var(--rxl-text);
-    }
-
-    .rxl-watchlist-tab-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 999px;
-      background: var(--rxl-accent);
-      box-shadow: 0 0 8px var(--rxl-accent);
-    }
-
-    .rxl-watchlist-body {
-      display: grid;
-      grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
-      gap: 1rem;
-    }
-
-    @media (max-width: 700px) {
-      .rxl-watchlist-body {
-        grid-template-columns: minmax(0, 1fr);
-      }
-    }
-
-    .rxl-card-section-title {
-      font-size: 0.75rem;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--rxl-muted);
-      margin-bottom: 0.5rem;
-    }
-
-    .rxl-input-group {
-      margin-bottom: 0.75rem;
-    }
-
-    .rxl-label {
-      font-size: 0.8rem;
-      color: var(--rxl-muted);
-      display: block;
-      margin-bottom: 0.25rem;
-    }
-
-    .rxl-input {
-      width: 100%;
-      border-radius: 0.5rem;
-      border: 1px solid #1f2937;
-      padding: 0.45rem 0.6rem;
-      background: rgba(15, 23, 42, 0.9);
-      color: var(--rxl-text);
-      font-size: 0.85rem;
-      outline: none;
-    }
-
-    .rxl-input:focus {
-      border-color: var(--rxl-accent);
-      box-shadow: 0 0 0 1px rgba(34,211,238,0.3);
-    }
-
-    .rxl-asset-checkboxes {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem 1.25rem;
-    }
-
-    .rxl-checkbox-label {
-      font-size: 0.85rem;
-      display: flex;
-      align-items: center;
-      gap: 0.35rem;
-      cursor: pointer;
-    }
-
-    .rxl-checkbox-label input[type="checkbox"] {
-      accent-color: #22d3ee;
-    }
-
-    .rxl-watchlist-summary {
-      font-size: 0.8rem;
-      color: var(--rxl-muted);
-    }
-
-    /* === Bottom ticker ============================================ */
+    /* === Bottom Ticker ================================================= */
 
     .rxl-ticker-shell {
       position: fixed;
@@ -191,6 +79,7 @@
       align-items: stretch;
     }
 
+    /* Optional left label "LIVE MARKETS" */
     .rxl-ticker-label {
       display: flex;
       align-items: center;
@@ -236,8 +125,12 @@
     }
 
     @keyframes rxl-ticker-scroll {
-      0%   { transform: translate3d(0, -50%, 0); }
-      100% { transform: translate3d(-50%, -50%, 0); }
+      0% {
+        transform: translate3d(0, -50%, 0);
+      }
+      100% {
+        transform: translate3d(-50%, -50%, 0);
+      }
     }
 
     .rxl-ticker-item {
@@ -255,12 +148,21 @@
       text-transform: uppercase;
     }
 
-    .rxl-ticker-price { opacity: 0.9; }
+    .rxl-ticker-price {
+      opacity: 0.9;
+    }
 
-    .rxl-ticker-change { font-size: 0.75rem; }
+    .rxl-ticker-change {
+      font-size: 0.75rem;
+    }
 
-    .rxl-up .rxl-ticker-change { color: #22c55e; }
-    .rxl-down .rxl-ticker-change { color: #ef4444; }
+    .rxl-up .rxl-ticker-change {
+      color: #22c55e;
+    }
+
+    .rxl-down .rxl-ticker-change {
+      color: #ef4444;
+    }
 
     .rxl-ticker-sep {
       opacity: 0.35;
@@ -275,7 +177,9 @@
     }
 
     @media (max-width: 600px) {
-      .rxl-ticker-label { display: none; }
+      .rxl-ticker-label {
+        display: none; /* give max width to the actual ticker on small screens */
+      }
     }
   </style>
 </head>
@@ -283,209 +187,34 @@
 
   <div class="rxl-main">
     <div class="rxl-main-inner">
-      <div class="rxl-title">RiskXLabs Ticker Watchlists</div>
+      <div class="rxl-title">RiskXLabs Ticker Test</div>
       <div class="rxl-subtitle">
-        Create up to three watchlists, rename them, and choose which assets appear in the live bottom ticker.
-        All preferences are stored <strong>in your browser only</strong> (no database, no signup).
-      </div>
-
-      <div class="rxl-watchlists">
-        <div class="rxl-watchlist-tabs">
-          <button class="rxl-watchlist-tab rxl-watchlist-tab-active" data-wl-index="0">
-            <span class="rxl-watchlist-tab-dot"></span>
-            <span id="wl-tab-label-0">Watchlist 1</span>
-          </button>
-          <button class="rxl-watchlist-tab" data-wl-index="1">
-            <span class="rxl-watchlist-tab-dot"></span>
-            <span id="wl-tab-label-1">Watchlist 2</span>
-          </button>
-          <button class="rxl-watchlist-tab" data-wl-index="2">
-            <span class="rxl-watchlist-tab-dot"></span>
-            <span id="wl-tab-label-2">Watchlist 3</span>
-          </button>
-        </div>
-
-        <div class="rxl-watchlist-body">
-          <div>
-            <div class="rxl-card-section-title">Active watchlist</div>
-            <div class="rxl-input-group">
-              <label class="rxl-label" for="wl-name-input">Name</label>
-              <input id="wl-name-input" class="rxl-input" type="text" maxlength="32" />
-            </div>
-
-            <div class="rxl-input-group">
-              <div class="rxl-label">Assets (from available worker feed)</div>
-              <div class="rxl-asset-checkboxes">
-                <label class="rxl-checkbox-label">
-                  <input type="checkbox" class="wl-asset-checkbox" value="ETH" /> ETH
-                </label>
-                <label class="rxl-checkbox-label">
-                  <input type="checkbox" class="wl-asset-checkbox" value="SOL" /> SOL
-                </label>
-                <label class="rxl-checkbox-label">
-                  <input type="checkbox" class="wl-asset-checkbox" value="XRP" /> XRP
-                </label>
-                <label class="rxl-checkbox-label">
-                  <input type="checkbox" class="wl-asset-checkbox" value="IOTX" /> IOTX
-                </label>
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <div class="rxl-card-section-title">Summary</div>
-            <div class="rxl-watchlist-summary" id="wl-summary">
-              Use the tabs above to switch between Watchlists 1–3. Name each one and choose which assets to include.
-              The bottom ticker will show only the assets in the currently active watchlist.
-            </div>
-          </div>
-        </div>
+        This page is just a sandbox to test the Cloudflare Worker streaming prices
+        for ETH, IOTX, SOL, and XRP. The ticker along the bottom hits your
+        <code>/api/ticker</code> endpoint every 12 seconds.
       </div>
     </div>
   </div>
 
-  <!-- Bottom ticker -->
+  <!-- === Bottom Ticker ====================================================== -->
   <div class="rxl-ticker-shell">
     <div class="rxl-ticker-label">
       <span class="rxl-ticker-dot"></span>
-      <span id="rxl-ticker-label-text">LIVE MARKETS · Watchlist 1</span>
+      <span>LIVE MARKETS</span>
     </div>
     <div class="rxl-ticker-viewport">
-      <div id="rxl-ticker-track" class="rxl-ticker-track"></div>
+      <div id="rxl-ticker-track" class="rxl-ticker-track">
+        <!-- populated by JS -->
+      </div>
     </div>
   </div>
 
   <script>
-    // === CONFIG =======================================================
+    // === CONFIG ============================================================
+    // Replace this with your actual Worker URL
     const RXL_TICKER_API = "https://marketdata.agedotcom.workers.dev/api/ticker";
-    const REFRESH_MS = 12000;
-    const WATCHLIST_STORAGE_KEY = "rxl_ticker_watchlists_v1";
-    const AVAILABLE_SYMBOLS = ["ETH", "SOL", "XRP", "IOTX"];
 
-    let watchlists = [
-      { name: "Watchlist 1", symbols: ["ETH", "SOL", "XRP", "IOTX"] },
-      { name: "Watchlist 2", symbols: ["ETH", "SOL"] },
-      { name: "Watchlist 3", symbols: ["ETH"] }
-    ];
-    let activeWatchlistIndex = 0;
-
-    // === Watchlist persistence ========================================
-
-    function loadWatchlistsFromStorage() {
-      try {
-        const raw = localStorage.getItem(WATCHLIST_STORAGE_KEY);
-        if (!raw) return;
-        const parsed = JSON.parse(raw);
-        if (!Array.isArray(parsed) || parsed.length !== 3) return;
-        // basic sanitization
-        watchlists = parsed.map((wl, idx) => ({
-          name: wl?.name || `Watchlist ${idx + 1}`,
-          symbols: Array.isArray(wl?.symbols)
-            ? wl.symbols.filter(s => AVAILABLE_SYMBOLS.includes(s))
-            : []
-        }));
-      } catch (e) {
-        console.warn("Failed to parse stored watchlists", e);
-      }
-    }
-
-    function saveWatchlistsToStorage() {
-      try {
-        localStorage.setItem(WATCHLIST_STORAGE_KEY, JSON.stringify(watchlists));
-      } catch (e) {
-        console.warn("Failed to save watchlists", e);
-      }
-    }
-
-    // === Watchlist UI wiring ==========================================
-
-    function initWatchlistUI() {
-      loadWatchlistsFromStorage();
-      updateWatchlistUI();
-      attachWatchlistHandlers();
-    }
-
-    function updateWatchlistUI() {
-      // Tabs
-      for (let i = 0; i < 3; i++) {
-        const tab = document.querySelector(`.rxl-watchlist-tab[data-wl-index="${i}"]`);
-        const labelSpan = document.getElementById(`wl-tab-label-${i}`);
-        if (!tab || !labelSpan) continue;
-        const wl = watchlists[i];
-        labelSpan.textContent = wl.name || `Watchlist ${i + 1}`;
-        tab.classList.toggle("rxl-watchlist-tab-active", i === activeWatchlistIndex);
-      }
-
-      // Name input & checkboxes for active watchlist
-      const wl = watchlists[activeWatchlistIndex];
-      const nameInput = document.getElementById("wl-name-input");
-      if (nameInput) nameInput.value = wl.name;
-
-      const checkboxes = document.querySelectorAll(".wl-asset-checkbox");
-      const set = new Set(wl.symbols);
-      checkboxes.forEach(cb => {
-        cb.checked = set.has(cb.value);
-      });
-
-      // Summary
-      const summaryEl = document.getElementById("wl-summary");
-      if (summaryEl) {
-        const symbols = wl.symbols.length ? wl.symbols.join(", ") : "No assets selected";
-        summaryEl.textContent =
-          `Active: ${wl.name || `Watchlist ${activeWatchlistIndex + 1}`} · ` +
-          `Assets: ${symbols}. The bottom ticker only shows these assets.`;
-      }
-
-      // Ticker label
-      const tickerLabel = document.getElementById("rxl-ticker-label-text");
-      if (tickerLabel) {
-        tickerLabel.textContent = `LIVE MARKETS · ${wl.name || `Watchlist ${activeWatchlistIndex + 1}`}`;
-      }
-    }
-
-    function attachWatchlistHandlers() {
-      // Tabs
-      document.querySelectorAll(".rxl-watchlist-tab").forEach(tab => {
-        tab.addEventListener("click", () => {
-          const idx = Number(tab.getAttribute("data-wl-index"));
-          if (Number.isNaN(idx)) return;
-          activeWatchlistIndex = idx;
-          updateWatchlistUI();
-          refreshTicker(); // re-render ticker with this watchlist
-        });
-      });
-
-      // Name input
-      const nameInput = document.getElementById("wl-name-input");
-      if (nameInput) {
-        nameInput.addEventListener("input", () => {
-          const val = nameInput.value.trim() || `Watchlist ${activeWatchlistIndex + 1}`;
-          watchlists[activeWatchlistIndex].name = val;
-          saveWatchlistsToStorage();
-          updateWatchlistUI();
-        });
-      }
-
-      // Asset checkboxes
-      document.querySelectorAll(".wl-asset-checkbox").forEach(cb => {
-        cb.addEventListener("change", () => {
-          const wl = watchlists[activeWatchlistIndex];
-          const val = cb.value;
-          const set = new Set(wl.symbols);
-          if (cb.checked) {
-            set.add(val);
-          } else {
-            set.delete(val);
-          }
-          wl.symbols = Array.from(set);
-          saveWatchlistsToStorage();
-          updateWatchlistUI();
-          refreshTicker();
-        });
-      });
-    }
-
-    // === Ticker logic ==================================================
+    const REFRESH_MS = 12000; // 12 seconds
 
     async function fetchTickerData() {
       try {
@@ -517,18 +246,13 @@
     }
 
     function buildTickerRowHtml(assets) {
-      const wl = watchlists[activeWatchlistIndex];
-      const set = new Set(wl.symbols);
-
-      const filtered = (assets || []).filter(a => set.has((a.symbol || "").toUpperCase()));
-
-      if (!filtered.length) {
-        return `<span class="rxl-ticker-empty">No assets selected for this watchlist.</span>`;
+      if (!assets || !assets.length) {
+        return `<span class="rxl-ticker-empty">Waiting for market data…</span>`;
       }
 
       const segments = [];
 
-      filtered.forEach((a, idx) => {
+      assets.forEach((a, idx) => {
         const price = formatPrice(a.priceUsd);
         const change = Number(a.change24hPct || 0);
         const cls = change >= 0 ? "rxl-up" : "rxl-down";
@@ -541,7 +265,7 @@
           </span>
         `);
 
-        if (idx < filtered.length - 1) {
+        if (idx < assets.length - 1) {
           segments.push(`<span class="rxl-ticker-sep">|</span>`);
         }
       });
@@ -556,20 +280,21 @@
       const assets = await fetchTickerData();
       const rowHtml = buildTickerRowHtml(assets);
 
-      // Duplicate row for scrolling effect
+      // Duplicate once so the marquee has something to scroll into
       track.innerHTML = rowHtml + rowHtml;
 
-      // Restart animation
+      // Restart animation so it feels continuous on each refresh
       track.style.animation = "none";
+      // Trigger reflow
       void track.offsetHeight;
       track.style.animation = "";
       track.style.animation = "rxl-ticker-scroll 25s linear infinite";
     }
 
-    // === Init =========================================================
-
-    initWatchlistUI();
+    // Initial load
     refreshTicker();
+
+    // Poll every 12 seconds
     setInterval(refreshTicker, REFRESH_MS);
   </script>
 </body>
